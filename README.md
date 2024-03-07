@@ -117,11 +117,12 @@ Copy this ```data``` folder with the generated engine file to the ROS2-NanoOWL f
 ```
 cp -r data/ ${ISAAC_ROS_WS}/src/ROS2-NanoOWL
 ```
-7. Run the image publisher node to publish input images for inference. We can use the sample image in ```src/nanoowl/assets/```:
+7. Run the image publisher node to publish input images for inference. We can use the sample image in ```${ISAAC_ROS_WS}/src/nanoowl/assets/```:
 ```
+cd ${ISAAC_ROS_WS}
 ros2 run image_publisher image_publisher_node src/nanoowl/assets/owl_glove_small.jpg --ros-args --remap /image_raw:=/input_image
 ```
-8. You can also play a rosbag for inference. Make sure to remap the image topic to input_image:
+8. You can also play a rosbag for inference. Make sure to remap the image topic to ```input_image```. For example:
 ```
 ros2 bag play <path-to-rosbag> --remap /front/stereo_camera/left/rgb:=/input_image
 ```
@@ -139,7 +140,7 @@ ros2 launch ros2_nanoowl nano_owl_example.launch.py thresholds:=0.1 image_encode
    If an older query is being published, please update it:
    * If using Foxglove: Check that the query on the panel is correct and click the Publish button again. Remember to click the Publish button everytime you update your query!
    * If using command line: Rerun the ```ros2 topic pub``` command (given in  step 9) with the updated query. 
-12. Visualize output on topic ```/output_image``` using RVIZ or Foxglove.
+12. Visualize output on topic ```/output_image``` using RVIZ or Foxglove. Output bounding boxes are published on topic ```/output_detections```.
 13. To perform inference on a live camera stream, run the following launch file. Publish a query as given in step 9:
 ```
 ros2 launch ros2_nanoowl camera_input_example.launch.py thresholds:=0.1 image_encoder_engine:='src/ROS2-NanoOWL/data/owl_image_encoder_patch32.engine'
