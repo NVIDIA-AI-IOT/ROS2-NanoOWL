@@ -16,7 +16,6 @@
 
 <p align="center">
   <img src="assets/people_detection.png" width="45%">
-&nbsp; &nbsp; &nbsp; &nbsp;
   <img src="assets/ladder_detection.png" width="45%">
 </p>
 
