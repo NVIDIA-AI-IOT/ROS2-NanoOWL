@@ -128,7 +128,7 @@ ros2 bag play <path-to-rosbag> --remap /front/stereo_camera/left/rgb:=/input_ima
 ```
 9. From another terminal, publish your input query as a list of objects on the ```input_query``` topic using the command below. This query can be changed anytime while the ```ros2_nanoowl``` node is running to detect different objects. Another way to publish your query is through the ```publish``` panel in [Foxglove](https://foxglove.dev/) (instructions given below in this repository).
 ```
-ros2 topic pub /input_query std_msgs/String `data: a person, a box, a forklift`
+ros2 topic pub /input_query std_msgs/String 'data: a person, a box, a forklift'
 ``` 
 10. Run the launch file to start detecting objects. Find more information on usage and arguments below:
 ```
