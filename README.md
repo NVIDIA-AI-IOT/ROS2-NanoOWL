@@ -23,7 +23,7 @@
 ```
 cd ${ISAAC_ROS_WS}/src
 git clone https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_common.git
-git clone <link-to-ros2-nano-owl>
+git clone https://github.com/NVIDIA-AI-IOT/ROS2-NanoOWL.git
 git clone https://github.com/NVIDIA-AI-IOT/nanoowl
 git clone https://github.com/NVIDIA-AI-IOT/torch2trt
 git clone --branch humble https://github.com/ros2/demos.git
@@ -39,8 +39,9 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
       import torch
       torch.__version__
       ```
-   * **Torchvision**: Identify which version of torchvision is compatible with your PyTorch version from [here](https://pytorch.org/get-started/previous-versions/). Clone and install that specific version from source: ```git clone –-branch <version> https://github.com/pytorch/vision.git```. For example:
+   * **Torchvision**: Identify which version of torchvision is compatible with your PyTorch version from [here](https://pytorch.org/get-started/previous-versions/). Clone and install that specific version from source in your workspace's src folder: ```git clone –-branch <version> https://github.com/pytorch/vision.git```. For example:
       ```
+      cd ${ISAAC_ROS_WS}/src
       git clone –-branch v0.13.0 https://github.com/pytorch/vision.git
       cd vision
       pip install .
@@ -57,11 +58,11 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
       sudo apt-get install ninja-build
       sudo apt install nvidia-cuda-dev
       ```
-   * **NVIDIA TensorRT**: If you’re developing on an NVIDIA Jetson, TensorRT is pre installed as part of JetPack. Verify the installation by running python from terminal, and then this command in the interactive Python interpreter: ```import tensorrt```. If it says ‘ModuleNotFound’, try each of the following and check again following the steps above:
+   * **NVIDIA TensorRT**: If you’re developing on an NVIDIA Jetson, TensorRT is pre installed as part of JetPack. Verify the installation by running python from terminal, and then this command in the interactive Python interpreter: ```import tensorrt```. If it says ‘ModuleNotFound’, try the following command and check again following the steps above:
       ```
       sudo apt-get install python3-libnvinfer-dev
       ```
-      The python bindings to tensorrt are available in ```dist-packages```, which may not be visible to your environment. We add ```dist-packages``` to ```PYTHONPATH``` to make this work:
+      In case the 'ModuleNotFound' error still shows up - The python bindings to tensorrt are available in ```dist-packages```, which may not be visible to your environment. We add ```dist-packages``` to ```PYTHONPATH``` to make this work:
       ```
       export PYTHONPATH=/usr/lib/python3.8/dist-packages:$PYTHONPATH
       ```
@@ -73,16 +74,20 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
       ```
       pip install transformers
       ```
+   * **Matplotlib**:
+      ```
+      pip install matplotlib
+      ```
    * **torch2trt**:
    Enter the torch2trt repository cloned in step 2 and install the package:
       ```
-      cd src/torch2trt
+      cd ${ISAAC_ROS_WS}/src/torch2trt
       pip install .
       ```
    * **NanoOWL**: 
    Enter the NanoOWL repository cloned in step 2 and install the package:
       ```
-      cd src/nanoowl
+      cd ${ISAAC_ROS_WS}/src/nanoowl
       pip install .
       ```
    * **cam2image**:
@@ -92,34 +97,50 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
       colcon build --symlink-install --packages-select image_tools
       source install/setup.bash
       ```
-   Verify that the cam2image node works by running the following command in a terminal and viewing topic ```/image``` in RViz/Foxglove from another terminal:
+      Verify that the cam2image node works by running the following command in a terminal and viewing topic ```/image``` in RViz/Foxglove from another terminal:
       ```
       ros2 run image_tools cam2image
       ```
-5. Build the TensorRT engine for the OWL-ViT vision encoder:
+5. Build ros2_nanoowl:
 ```
-cd src/nanoowl
+cd ${ISAAC_ROS_WS}
+colcon build --symlink-install --packages-select ros2_nanoowl
+source install/setup.bash
+```
+6. Build the TensorRT engine for the OWL-ViT vision encoder - this step may take a few minutes:
+```
+cd ${ISAAC_ROS_WS}/src/nanoowl
 mkdir -p data
 python3 -m nanoowl.build_image_encoder_engine data/owl_image_encoder_patch32.engine
 ```
-6. Run the image publisher node to publish input images for inference. We can use the sample image in ```src/nanoowl/assets/```:
+Copy this ```data``` folder with the generated engine file to the ROS2-NanoOWL folder:
+```
+cp -r data/ ${ISAAC_ROS_WS}/src/ROS2-NanoOWL
+```
+7. Run the image publisher node to publish input images for inference. We can use the sample image in ```src/nanoowl/assets/```:
 ```
 ros2 run image_publisher image_publisher_node src/nanoowl/assets/owl_glove_small.jpg --ros-args --remap /image_raw:=/input_image
 ```
-7. You can also play a rosbag for inference. Make sure to remap the image topic to input_image:
+8. You can also play a rosbag for inference. Make sure to remap the image topic to input_image:
 ```
 ros2 bag play <path-to-rosbag> --remap /front/stereo_camera/left/rgb:=/input_image
 ```
-8. From another terminal, publish your input query as a list of objects on the ```input_query``` topic using the command below. This query can be changed anytime while the ```ros2_nanoowl``` node is running to detect different objects. Another way to publish your query is through the ```publish``` panel in [Foxglove](https://foxglove.dev/) (instructions given below in this repository).
+9. From another terminal, publish your input query as a list of objects on the ```input_query``` topic using the command below. This query can be changed anytime while the ```ros2_nanoowl``` node is running to detect different objects. Another way to publish your query is through the ```publish``` panel in [Foxglove](https://foxglove.dev/) (instructions given below in this repository).
 ```
 ros2 topic pub /input_query std_msgs/String `data: a person, a box, a forklift`
 ``` 
-9. Run the launch file to start detecting objects. Find more information on usage and arguments below:
+10. Run the launch file to start detecting objects. Find more information on usage and arguments below:
 ```
 ros2 launch ros2_nanoowl nano_owl_example.launch.py thresholds:=0.1 image_encoder_engine:='src/ROS2-NanoOWL/data/owl_image_encoder_patch32.engine'
 ```
-10. Visualize output on topic ```/output_image``` using RVIZ or Foxglove.
-11. To perform inference on a live camera stream, run the following launch file. Publish a query as given in step 8:
+11. The ```ros2_nanoowl``` node prints the current query to terminal, so you can check that your most recent query is being used:
+![image info](assets/ROS2-NanoOWL-query.png)
+
+   If an older query is being published, please update it:
+   * If using Foxglove: Check that the query on the panel is correct and click the Publish button again. Remember to click the Publish button everytime you update your query!
+   * If using command line: Rerun the ```ros2 topic pub``` command (given in  step 9) with the updated query. 
+12. Visualize output on topic ```/output_image``` using RVIZ or Foxglove.
+13. To perform inference on a live camera stream, run the following launch file. Publish a query as given in step 9:
 ```
 ros2 launch ros2_nanoowl camera_input_example.launch.py thresholds:=0.1 image_encoder_engine:='src/ROS2-NanoOWL/data/owl_image_encoder_patch32.engine'
 ```
