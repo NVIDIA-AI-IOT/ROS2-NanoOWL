@@ -4,18 +4,15 @@
 
 [NanoOWL](https://github.com/NVIDIA-AI-IOT/nanoowl) optimizes [OWL-ViT](https://huggingface.co/docs/transformers/model_doc/owlvit) to run real-time on NVIDIA Jetson Orin with [TensorRT](https://developer.nvidia.com/tensorrt). This project provides a ROS 2 package for object detection using NanoOWL.
 
-<p float="left">
-  <img src="assets/forklift_detection.png" width="500" />
-  <img src="assets/pallet_detection.png" width="500" /> 
-</p>
-
-<p float="left">
-  <img src="assets/people_detection.png" width="500" />
-  <img src="assets/ladder_detection.png" width="500" /> 
+<p align="center">
+  <img src="assets/forklift_detection.png" width="45%">
+&nbsp; &nbsp;
+  <img src="assets/pallet_detection.png" width="45%">
 </p>
 
 <p align="center">
   <img src="assets/people_detection.png" width="45%">
+&nbsp; &nbsp;
   <img src="assets/ladder_detection.png" width="45%">
 </p>
 
