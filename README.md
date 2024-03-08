@@ -59,7 +59,7 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
    * **Torchvision**: Identify which version of torchvision is compatible with your PyTorch version from [here](https://pytorch.org/get-started/previous-versions/). Clone and install that specific version from source in your workspace's src folder: ```git clone –-branch <version> https://github.com/pytorch/vision.git```. For example:
       ```
       cd ${ISAAC_ROS_WS}/src
-      git clone –-branch v0.13.0 https://github.com/pytorch/vision.git
+      git clone --branch v0.13.0 https://github.com/pytorch/vision.git
       cd vision
       pip install .
       ```
