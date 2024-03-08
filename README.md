@@ -40,6 +40,22 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
       import torch
       torch.__version__
       ```
+   * **NVIDIA TensorRT**: If you’re developing on an NVIDIA Jetson, TensorRT is pre installed as part of JetPack. Verify the installation by running python from terminal, and then this command in the interactive Python interpreter: ```import tensorrt```. If it says ‘ModuleNotFound’, try the following command and check again following the steps above:
+      ```
+      sudo apt-get install python3-libnvinfer-dev
+      ```
+      If this fails, run the following command and try again:
+      ```
+      sudo apt-get install apt-utils
+      ```
+      In case the 'ModuleNotFound' error still shows up - The python bindings to tensorrt are available in ```dist-packages```, which may not be visible to your environment. We add ```dist-packages``` to ```PYTHONPATH``` to make this work:
+      ```
+      export PYTHONPATH=/usr/lib/python3.8/dist-packages:$PYTHONPATH
+      ```
+      If ```tensorrt``` is still not installed, try the following command:
+      ```
+      pip install pycuda
+      ```
    * **Torchvision**: Identify which version of torchvision is compatible with your PyTorch version from [here](https://pytorch.org/get-started/previous-versions/). Clone and install that specific version from source in your workspace's src folder: ```git clone –-branch <version> https://github.com/pytorch/vision.git```. For example:
       ```
       cd ${ISAAC_ROS_WS}/src
@@ -55,21 +71,9 @@ cd ${ISAAC_ROS_WS}/src/isaac_ros_common
       ```
       If it says ‘ModuleNotFound’, try each of the following and check again following the steps above:
       ```
+      sudo apt install nvidia-cuda-dev
       pip install ninja
       sudo apt-get install ninja-build
-      sudo apt install nvidia-cuda-dev
-      ```
-   * **NVIDIA TensorRT**: If you’re developing on an NVIDIA Jetson, TensorRT is pre installed as part of JetPack. Verify the installation by running python from terminal, and then this command in the interactive Python interpreter: ```import tensorrt```. If it says ‘ModuleNotFound’, try the following command and check again following the steps above:
-      ```
-      sudo apt-get install python3-libnvinfer-dev
-      ```
-      In case the 'ModuleNotFound' error still shows up - The python bindings to tensorrt are available in ```dist-packages```, which may not be visible to your environment. We add ```dist-packages``` to ```PYTHONPATH``` to make this work:
-      ```
-      export PYTHONPATH=/usr/lib/python3.8/dist-packages:$PYTHONPATH
-      ```
-      If ```tensorrt``` is still not installed, try the following command:
-      ```
-      pip install pycuda
       ```
    * **Transformers library**:
       ```
